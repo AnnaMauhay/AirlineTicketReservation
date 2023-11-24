@@ -1,38 +1,44 @@
 package futurewomen.flight;
 
-import futurewomen.DBUtil;
-import futurewomen.flight.Flight;
+import futurewomen.util.DBUtil;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static futurewomen.DBUtil.closeDB;
+import static futurewomen.util.DBUtil.closeDB;
 
 public class FlightDao {
+
     public int insertFlightToDB(Flight flight) {
         int result =0;
-        try {
-            String query = "INSERT INTO Flight (FlightID, Airline, Origin, Destination, " +
-                    "DepartureTime, ArrivalTime, Price, SeatsAvailable) " +
-                    "VALUES (?,?,?,?,?,?,?,?)";
-            PreparedStatement statement = DBUtil.getConnection().prepareStatement(query);
+        try (Connection connection = DBUtil.getConnection()) {
+            if (connection.isValid(0)){
+                System.out.println("A connection is valid");
+                String query = "INSERT INTO Flight (FlightID, Airline, Origin, Destination, " +
+                        "DepartureTime, ArrivalTime, Price, SeatsAvailable) " +
+                        "VALUES (?,?,?,?,?,?,?,?)";
+                PreparedStatement statement = connection.prepareStatement(query);
 
-            statement.setInt(1, flight.getFlightID());
-            statement.setString(2, flight.getAirline());
-            statement.setString(3, flight.getOrigin());
-            statement.setString(4, flight.getDestination());
-            statement.setTimestamp(5, flight.getDepartureTime());
-            statement.setTimestamp(6, flight.getArrivalTime());
-            statement.setFloat(7, flight.getPrice());
-            statement.setInt(8, flight.getSeatsAvailable());
+                statement.setInt(1, flight.getFlightID());
+                statement.setString(2, flight.getAirline());
+                statement.setString(3, flight.getOrigin());
+                statement.setString(4, flight.getDestination());
+                statement.setTimestamp(5, flight.getDepartureTime());
+                statement.setTimestamp(6, flight.getArrivalTime());
+                statement.setFloat(7, flight.getPrice());
+                statement.setInt(8, flight.getSeatsAvailable());
 
-            result = statement.executeUpdate();
-            statement.close();
+                result = statement.executeUpdate();
+
+                statement.close();
+            }else System.out.println();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        closeDB();
         return result;
     }
 
@@ -71,6 +77,7 @@ public class FlightDao {
         return flightList;
     }
 
+    /*
     public void queryFlight(Flight flight) {
         Connection connection = null;
 
@@ -107,4 +114,5 @@ public class FlightDao {
             System.out.println(e.getMessage());
         }
     }
+    */
 }
